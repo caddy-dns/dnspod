@@ -12,17 +12,17 @@ dns.providers.dnspod
 
 To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) like so:
 
-```
+```json
 {
-	"module": "acme",
-	"challenges": {
-		"dns": {
-			"provider": {
-				"name": "dnspod",
-				"api_token": "YOUR_DNSPOD_API_TOKEN"
-			}
-		}
-	}
+  "module": "acme",
+  "challenges": {
+    "dns": {
+      "provider": {
+	"name": "dnspod",
+	"api_token": "YOUR_DNSPOD_API_TOKEN"
+      }
+    }
+  }
 }
 ```
 
@@ -30,7 +30,7 @@ or with the Caddyfile:
 
 ```
 tls {
-	dns dnspod {env.DNSPOD_TOKEN}
+  dns dnspod {env.DNSPOD_TOKEN}
 }
 ```
 
