@@ -18,8 +18,8 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
   "challenges": {
     "dns": {
       "provider": {
-	"name": "dnspod",
-	"api_token": "YOUR_DNSPOD_API_TOKEN"
+        "name": "dnspod",
+        "api_token": "YOUR_DNSPOD_API_TOKEN"
       }
     }
   }
