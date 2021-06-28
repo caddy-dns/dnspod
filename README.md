@@ -34,7 +34,7 @@ tls {
 }
 ```
 
-You can replace `{env.DNSPOD_TOKEN}` with the actual auth token if you prefer to put it directly in your config instead of an environment variable.
+You can replace `{env.DNSPOD_TOKEN}` with the actual auth token, which format is "APP_ID,APP_TOKEN", if you prefer to put it directly in your config instead of an environment variable.
 
 ## Authenticating
 
