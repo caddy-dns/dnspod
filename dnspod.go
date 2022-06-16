@@ -36,6 +36,16 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 // }
 //
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+	// Get DNSPOD Token from os environ.
+	token, exist := os.LookupEnv("DNSPOD_TOKEN")
+	if exist {
+		p.DNSProvider.APIToken = token
+
+		log.Info("get api token", zap.String("token", p.DNSProvider.APIToken))
+		return nil
+	}
+
+	// Check DNSPOD Token from the config file.
 	for d.Next() {
 		if d.NextArg() {
 			p.Provider.APIToken = d.Val()
