@@ -120,7 +120,7 @@ func (p *Provider) AppendRecords(ctx context.Context, zone string, records []lib
 		if err != nil {
 			return addedRecords, err
 		}
-		addedRecords = append(addedRecords, p.toLibdnsRecord(created))
+		addedRecords = append(addedRecords, withID(libdnsRecord, created.ID))
 	}
 
 	return addedRecords, nil
@@ -148,13 +148,13 @@ func (p *Provider) SetRecords(ctx context.Context, zone string, records []libdns
 			if err != nil {
 				return setRecords, err
 			}
-			setRecords = append(setRecords, p.toLibdnsRecord(created))
+			setRecords = append(setRecords, withID(libdnsRecord, created.ID))
 			continue
 		}
 
 		// Set ID in the attributes for Update as DNSPod API often requires it in the body
 		dnspodRec.ID = id
-		updated, _, err := client.Records.Update(domainID, id, dnspodRec)
+		_, _, err := client.Records.Update(domainID, id, dnspodRec)
 		if err != nil {
 			// Fallback: Delete and Re-create if Update fails (sometimes DNSPod API is picky about record IDs)
 			_, _ = client.Records.Delete(domainID, id)
@@ -162,10 +162,10 @@ func (p *Provider) SetRecords(ctx context.Context, zone string, records []libdns
 			if err != nil {
 				return setRecords, fmt.Errorf("update failed (%v) and fallback create also failed: %v", id, err)
 			}
-			setRecords = append(setRecords, p.toLibdnsRecord(created))
+			setRecords = append(setRecords, withID(libdnsRecord, created.ID))
 			continue
 		}
-		setRecords = append(setRecords, p.toLibdnsRecord(updated))
+		setRecords = append(setRecords, withID(libdnsRecord, id))
 	}
 
 	return setRecords, nil
@@ -224,6 +224,13 @@ func (p *Provider) getDomainID(zone string) (string, error) {
 	}
 
 	return "", fmt.Errorf("domain %s not found", zone)
+}
+
+// withID returns rec with the DNSPod record ID attached. Record.Create and Record.Modify
+// only echo back id, name and status, so a libdns record built from their responses
+// would lose the type, value and TTL that callers (e.g. ACME DNS-01 solvers) rely on.
+func withID(rec libdns.Record, id string) libdns.Record {
+	return Record{ID: id, base: rec.RR()}
 }
 
 func (p *Provider) toLibdnsRecord(record dnspod.Record) libdns.Record {

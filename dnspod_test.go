@@ -45,6 +45,9 @@ func TestProvider(t *testing.T) {
 		t.Fatalf("AppendRecords failed: %v", err)
 	}
 	recordID := appended[0].(Record).ID
+	if rr := appended[0].RR(); rr.Type != "TXT" || rr.Data != "test-v1" {
+		t.Fatalf("AppendRecords returned %+v, want the appended TXT record", rr)
+	}
 
 	// 3. SetRecords (Update via fallback)
 	t.Logf("Testing SetRecords (Update)")
